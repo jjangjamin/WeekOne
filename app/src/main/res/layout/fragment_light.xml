@@ -30,7 +30,7 @@
         android:layout_height="52dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="59dp"
+        android:layout_marginBottom="56dp"
         android:background="@drawable/selector_state4" />
 
     <ImageView

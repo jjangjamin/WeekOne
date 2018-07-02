@@ -19,7 +19,6 @@
         android:id="@+id/listContacts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:layout_below="@+id/button"
         android:textAlignment="center"
         android:text="우리 누구랑 술먹을지 한번 볼까?"
@@ -30,6 +29,7 @@
         android:id="@+id/listviewContacts"
         android:layout_width="318dp"
         android:layout_height="398dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@id/listContacts"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">

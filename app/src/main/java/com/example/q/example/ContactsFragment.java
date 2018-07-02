@@ -1,5 +1,6 @@
 package com.example.q.example;
 
+import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -105,39 +107,42 @@ public class ContactsFragment extends Fragment{
         loadContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 GetContactsIntoArrayList();
                 listviewContact.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
                         R.layout.contact_items_listview, R.id.textView, StoreContacts));
                 loadContacts.setEnabled(false);
+
             }
-        }
-        );
+        });
+
+
+
         listviewContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView parent, View v, int position, long id) {
-                Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("tel:010..."));
-                try {
-                    startActivity(intent);
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
+            public void onItemClick(AdapterView<?>parent, View v, int position, long id) {
+                String phone = (StoreContacts.get(position).replaceAll("[^0-9]", ""));
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+                    intent.setData(Uri.parse("tel:" + phone));
+                    try {
+                        startActivity(intent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
             }
         });
         return v;
 
     }
 
-
+    int unicode = 0x1F92A;
     public void GetContactsIntoArrayList() {
         cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {
                 name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                StoreContacts.add(name + " " + ":" + " " + phonenumber);
+                StoreContacts.add( new String(Character.toChars(0x1F92A)) + new String(Character.toChars(0x1F37B)) + new String(Character.toChars(0x1F4DE)) + "    " + name );
             }
             cursor.close();
         }
