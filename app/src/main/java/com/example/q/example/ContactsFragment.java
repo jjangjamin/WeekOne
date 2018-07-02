@@ -117,7 +117,7 @@ public class ContactsFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView parent, View v, int position, long id) {
                 Intent intent = new Intent(Intent.ACTION_CALL);
-                intent.setData(Uri.parse("010"));
+                intent.setData(Uri.parse("tel:010..."));
                 try {
                     startActivity(intent);
                 }
