@@ -1,11 +1,15 @@
 package com.example.q.example;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
 
 
 public class MainActivity extends AppCompatActivity implements ContactsFragment.OnFragmentInteractionListener,GalleryFragment.OnFragmentInteractionListener,LightFragment.OnFragmentInteractionListener {
@@ -41,11 +45,13 @@ public class MainActivity extends AppCompatActivity implements ContactsFragment.
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
+
+
         });
 
     }
 
-    @Override
+        @Override
     public void onFragmentInteraction(Uri uri) {
 
     }

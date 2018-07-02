@@ -1,12 +1,17 @@
 package com.example.q.example;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 
 
 /**
@@ -64,7 +69,43 @@ public class LightFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_light, container, false);
+        View v = inflater.inflate(R.layout.fragment_light, container, false);
+        final AnimationDrawable animation = new AnimationDrawable();
+        Button startlight = (Button)v.findViewById(R.id.startlight);
+        Button stoplight = (Button)v.findViewById(R.id.stoplight);
+        startlight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animation.start();
+            }
+        });
+        stoplight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animation.stop();
+            }
+        });
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight2), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight3), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight4), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight5), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight6), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight7), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight8), 50);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight2), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight3), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight4), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight5), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight6), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight7), 5);
+        animation.addFrame(getResources().getDrawable(R.drawable.glasslight8), 5);
+        ImageView imageAnim = (ImageView)v.findViewById(R.id.imagelight);
+        imageAnim.setBackgroundDrawable(animation);
+
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

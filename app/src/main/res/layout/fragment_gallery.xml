@@ -4,12 +4,32 @@
     android:layout_height="match_parent">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <Button
+        android:id="@+id/imagebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="이미지 갤러리"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="23dp"
+        android:background="@drawable/selector_state2" />
+    <TextView
+        android:id="@+id/gallerytext"
+        android:layout_below="@id/imagebutton"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="우리 잊고싶은 추억 한 번 되새겨 봐?"
+        android:textColor="@color/colorSoju"/>
+
+    <ImageView
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:scaleType="fitXY"
+        android:layout_below="@id/gallerytext"
+        android:id="@+id/imageView"
+        android:layout_marginTop="15dp"
         android:layout_centerInParent="true"
-        android:textSize="30dp"
         />
+
 
 </RelativeLayout>

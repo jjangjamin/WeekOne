@@ -1,12 +1,20 @@
 package com.example.q.example;
 
+import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 
 /**
@@ -51,6 +59,8 @@ public class GalleryFragment extends Fragment {
         return fragment;
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,13 +69,67 @@ public class GalleryFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+    ImageView imageView;
+
+    private Uri imageUri;
+    private Animator animator;
+    private int animationDuration;
+    Button imagebutton;
+    private static final int REQUEST_OPEN_RESULT_CODE = 0;
+    private static final int RESULT_LOAD_IMAGE= 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_gallery, container, false);
+        View v = inflater.inflate(R.layout.fragment_gallery, container, false);
+        imageView = (ImageView)v. findViewById(R.id.imageView);
+        imagebutton = (Button)v.findViewById(R.id.imagebutton);
+
+        imagebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("image/*");
+                startActivityForResult(intent,REQUEST_OPEN_RESULT_CODE);
+                animationDuration = getResources().getInteger(android.R.integer.config_longAnimTime);
+            }
+        });
+        imageView.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View v){
+                Toast.makeText(getActivity().getApplicationContext(), "ImageView long pressed!", Toast.LENGTH_SHORT).show();
+                //zoomImage();
+                return true;
+            }
+        });
+        return v;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData){
+        if(requestCode ==  REQUEST_OPEN_RESULT_CODE&&resultCode == Activity.RESULT_OK){
+            Uri uri = null;
+            if(resultData!=null){
+                uri = resultData.getData();
+                imageUri = resultData.getData();
+                /*try {
+                    Bitmap bitmap = getBitmapFromUri(uri);
+                    imageView.setImageBitmap(bitmap);
+                } catch(IOException e){
+                    e.printStackTrace();
+                }*/
+                Glide.with(this)
+                        .load(uri)
+                        .into(imageView);
+                /*Glide.with(this)
+                        .load(uri)
+                        .into(pz);*/
+            }
+        }
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

@@ -1,24 +1,28 @@
 package com.example.q.example;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
+import android.widget.RelativeLayout;
+import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -29,7 +33,7 @@ import java.util.Map;
  * Use the {@link ContactsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ContactsFragment extends Fragment {
+public class ContactsFragment extends Fragment{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,13 +42,20 @@ public class ContactsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     public ContactsFragment() {
         // Required empty public constructor
     }
 
+    private final static int[] TO_IDS = {
+            android.R.id.text1
+    };
+    ListView mContactsList;
+    long mContactId;
+    String mContactKey;
+    Uri mContactUri;
+    private SimpleCursorAdapter mCursorAdapter;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -63,6 +74,7 @@ public class ContactsFragment extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,23 +83,65 @@ public class ContactsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-   public String contactsjson[] = {"임재민", "해리포터", "황채은", "꾸꾸까까"};
+    private Button loadContacts;
+    private ListView listviewContact;
+    private TextView listContacts;
+    ArrayList<String> StoreContacts;
+    ArrayAdapter<String> arrayAdapter;
+    Cursor cursor;
+    String name, phonenumber;
+    public static final int RequestPermissionCode = 1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_contacts, container, false);
-        ListView listView = (ListView) view.findViewById(R.id.contacts_list_view);
-        ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                android.R.layout.simple_list_item_1,
-                contactsjson
+
+        View v = inflater.inflate(R.layout.fragment_contacts, container, false);
+        listviewContact = (ListView) v.findViewById(R.id.listviewContacts);
+        listContacts = (TextView) v.findViewById(R.id.listContacts);
+        loadContacts = (Button) v.findViewById(R.id.button);
+        StoreContacts = new ArrayList<String>();
+
+        loadContacts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                GetContactsIntoArrayList();
+                listviewContact.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
+                        R.layout.contact_items_listview, R.id.textView, StoreContacts));
+                loadContacts.setEnabled(false);
+            }
+        }
         );
-        listView.setAdapter(listViewAdapter);
-        return view;
+        listviewContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView parent, View v, int position, long id) {
+                Intent intent = new Intent(Intent.ACTION_CALL);
+                intent.setData(Uri.parse("010"));
+                try {
+                    startActivity(intent);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        return v;
+
     }
 
 
+    public void GetContactsIntoArrayList() {
+        cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                StoreContacts.add(name + " " + ":" + " " + phonenumber);
+            }
+            cursor.close();
+        }
+    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -112,6 +166,7 @@ public class ContactsFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

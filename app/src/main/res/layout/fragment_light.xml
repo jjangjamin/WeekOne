@@ -1,15 +1,42 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorBlack">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="글라스 라이트"
-        android:layout_centerInParent="true"
-        android:textSize="30dp"
+        android:layout_marginTop="20dp"
+        android:textAlignment="center"
+        android:text="잔을 스크린 위에 올리시오!"
+        android:textColor="@color/colorWhite"
         />
+
+    <Button
+        android:id="@+id/startlight"
+        android:layout_width="140dp"
+        android:layout_height="52dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="59dp"
+        android:background="@drawable/selector_state3" />
+
+    <Button
+        android:id="@+id/stoplight"
+        android:layout_width="140dp"
+        android:layout_height="52dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="59dp"
+        android:background="@drawable/selector_state4" />
+
+    <ImageView
+        android:id="@+id/imagelight"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>
