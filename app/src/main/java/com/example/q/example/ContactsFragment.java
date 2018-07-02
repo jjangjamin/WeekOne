@@ -1,8 +1,10 @@
 package com.example.q.example;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -89,6 +91,7 @@ public class ContactsFragment extends Fragment{
     private ListView listviewContact;
     private TextView listContacts;
     ArrayList<String> StoreContacts;
+    ArrayList<String> StoreContacts2;
     ArrayAdapter<String> arrayAdapter;
     Cursor cursor;
     String name, phonenumber;
@@ -103,6 +106,7 @@ public class ContactsFragment extends Fragment{
         listContacts = (TextView) v.findViewById(R.id.listContacts);
         loadContacts = (Button) v.findViewById(R.id.button);
         StoreContacts = new ArrayList<String>();
+        StoreContacts2 = new ArrayList<String>();
 
         loadContacts.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,27 +119,32 @@ public class ContactsFragment extends Fragment{
             }
         });
 
-
-
         listviewContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?>parent, View v, int position, long id) {
-                String phone = (StoreContacts.get(position).replaceAll("[^0-9]", ""));
-                    Intent intent = new Intent(Intent.ACTION_CALL);
-                    intent.setData(Uri.parse("tel:" + phone));
-                    try {
-                        startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+            public void onItemClick(AdapterView<?>parent, View v, final int position, long id) {
+                String friend = (StoreContacts.get(position).replaceAll("[0-9]", "").replaceAll(" ", "").replaceAll(new String(Character.toChars(0x1F92A)), "")
+                        .replaceAll(new String(Character.toChars(0x1F37B)), "").replaceAll(new String(Character.toChars(0x1F4DE)), ""));
+                        new AlertDialog.Builder(getActivity()).setTitle("전화 콜!").setMessage(friend + " 한테 술 먹자고 연락해봐요?").setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                Intent intent = new Intent(Intent.ACTION_CALL);
+                                intent.setData(Uri.parse("tel:" + phone));
+                                try {
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null).show();
             }
         });
         return v;
 
     }
 
-    int unicode = 0x1F92A;
     public void GetContactsIntoArrayList() {
         cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         if (cursor.getCount() > 0) {
@@ -143,6 +152,7 @@ public class ContactsFragment extends Fragment{
                 name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                 StoreContacts.add( new String(Character.toChars(0x1F92A)) + new String(Character.toChars(0x1F37B)) + new String(Character.toChars(0x1F4DE)) + "    " + name );
+                StoreContacts2.add( phonenumber);
             }
             cursor.close();
         }
