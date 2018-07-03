@@ -125,7 +125,7 @@ public class ContactsFragment extends Fragment{
                 String friend = (StoreContacts.get(position).replaceAll("[0-9]", "").replaceAll(" ", "").replaceAll(new String(Character.toChars(0x1F92A)), "")
                         .replaceAll(new String(Character.toChars(0x1F37B)), "").replaceAll(new String(Character.toChars(0x1F4DE)), ""));
                         new AlertDialog.Builder(getActivity()).setTitle("전화 콜!").setMessage(friend + " 한테 술 먹자고 연락해봐요?").setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        .setPositiveButton("전화걸기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
@@ -138,7 +138,19 @@ public class ContactsFragment extends Fragment{
                                 }
                             }
                         })
-                        .setNegativeButton(android.R.string.no, null).show();
+                        .setNegativeButton("문자보내기", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms",phone,null));
+                                try {
+                                    startActivity(intent);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+                        .setNeutralButton("취소", null).show();
             }
         });
         return v;
