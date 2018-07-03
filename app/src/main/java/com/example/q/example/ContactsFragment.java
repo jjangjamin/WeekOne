@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -122,7 +124,7 @@ public class ContactsFragment extends Fragment{
         listviewContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?>parent, View v, final int position, long id) {
-                String friend = (StoreContacts.get(position).replaceAll("[0-9]", "").replaceAll(" ", "").replaceAll(new String(Character.toChars(0x1F92A)), "")
+                final String friend = (StoreContacts.get(position).replaceAll("[0-9]", "").replaceAll(" ", "").replaceAll(new String(Character.toChars(0x1F92A)), "")
                         .replaceAll(new String(Character.toChars(0x1F37B)), "").replaceAll(new String(Character.toChars(0x1F4DE)), ""));
                         new AlertDialog.Builder(getActivity()).setTitle("전화 콜!").setMessage(friend + " 한테 술 먹자고 연락해봐요?").setIcon(android.R.drawable.ic_dialog_alert)
                         .setPositiveButton("전화걸기", new DialogInterface.OnClickListener() {
@@ -141,13 +143,30 @@ public class ContactsFragment extends Fragment{
                         .setNegativeButton("문자보내기", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
-                                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms",phone,null));
-                                try {
-                                    startActivity(intent);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+                                new AlertDialog.Builder(getActivity()).setTitle("문자보내기").setMessage("직접 보내실래요 아니면 내가 대신 보내드릴까요?").setIcon(android.R.drawable.ic_dialog_email)
+                                .setPositiveButton("직접보내기",new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms",phone,null));
+                                        try {
+                                            startActivity(intent);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                })
+                                .setNegativeButton("대신 보내줘", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                        String messageToSend = "오늘 술 각? 적셔부려 레츠기릿!";
+                                        SmsManager.getDefault().sendTextMessage(phone, null, messageToSend, null, null);
+                                        Toast.makeText(getActivity(), friend + "한테 문자 보냈쩌여~", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .setNeutralButton("취소", null).show();
+
                             }
                         })
                         .setNeutralButton("취소", null).show();
