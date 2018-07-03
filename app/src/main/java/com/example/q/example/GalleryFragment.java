@@ -1,20 +1,39 @@
 package com.example.q.example;
 
-import android.animation.Animator;
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.bumptech.glide.Glide;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 /**
@@ -72,11 +91,13 @@ public class GalleryFragment extends Fragment {
     ImageView imageView;
 
     private Uri imageUri;
-    private Animator animator;
-    private int animationDuration;
     Button imagebutton;
+    Button button;
+    TextView cameratext;
     private static final int REQUEST_OPEN_RESULT_CODE = 0;
     private static final int RESULT_LOAD_IMAGE= 1;
+    private final int CAMERA_RESULT=1;
+    private String imageFilePath="";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,7 +106,22 @@ public class GalleryFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_gallery, container, false);
         imageView = (ImageView)v. findViewById(R.id.imageView);
         imagebutton = (Button)v.findViewById(R.id.imagebutton);
+        button = (Button)v.findViewById(R.id.buttoncamera);
+        cameratext = (TextView)v.findViewById(R.id.cameratext);
+        Animation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(60);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        cameratext.startAnimation(anim);
 
+        cameratext.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       cameratext.clearAnimation();
+                    }
+                }
+        );
         imagebutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,9 +129,25 @@ public class GalleryFragment extends Fragment {
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("image/*");
                 startActivityForResult(intent,REQUEST_OPEN_RESULT_CODE);
-                animationDuration = getResources().getInteger(android.R.integer.config_longAnimTime);
+
             }
         });
+
+        button.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED){
+                    dispatchTakenPictureIntent();
+                }
+                else{
+                    if(shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)){
+                        Toast.makeText(getActivity().getApplicationContext(), "Permission Needed.", Toast.LENGTH_LONG).show();
+                    }
+                    requestPermissions(new String[]{Manifest.permission.CAMERA},CAMERA_RESULT);
+                }
+            }
+        });
+
         imageView.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View v){
@@ -107,8 +159,31 @@ public class GalleryFragment extends Fragment {
         return v;
     }
 
+    private void dispatchTakenPictureIntent(){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getActivity().getPackageManager()) != null){
+            startActivityForResult(intent, CAMERA_RESULT);
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[]permissions, @NonNull int[] grantResults) {
+        if (requestCode == CAMERA_RESULT) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_DENIED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                dispatchTakenPictureIntent();
+            } else {
+                Toast.makeText(getActivity().getApplicationContext(), "Permission Needed.", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData){
+        super.onActivityResult(requestCode,resultCode,resultData);
+
         if(requestCode ==  REQUEST_OPEN_RESULT_CODE&&resultCode == Activity.RESULT_OK){
             Uri uri = null;
             if(resultData!=null){
@@ -123,11 +198,15 @@ public class GalleryFragment extends Fragment {
                 Glide.with(this)
                         .load(uri)
                         .into(imageView);
-                /*Glide.with(this)
-                        .load(uri)
-                        .into(pz);*/
             }
         }
+        if (resultCode == Activity.RESULT_OK&&requestCode==CAMERA_RESULT){
+            Bundle extras = resultData.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            imageView.setImageBitmap(bitmap);
+        }
+
+
     }
 
 
@@ -154,6 +233,7 @@ public class GalleryFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this

@@ -17,11 +17,11 @@
 
     <Button
         android:id="@+id/startlight"
-        android:layout_width="140dp"
-        android:layout_height="52dp"
+        android:layout_width="130dp"
+        android:layout_height="57dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="59dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/selector_state3" />
 
     <Button
@@ -30,7 +30,7 @@
         android:layout_height="52dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="18dp"
         android:background="@drawable/selector_state4" />
 
     <ImageView

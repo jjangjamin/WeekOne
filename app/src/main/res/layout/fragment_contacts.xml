@@ -8,12 +8,12 @@
 
     <Button
         android:id="@+id/button"
-        android:background="@drawable/selector_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="57dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="23dp" />
+        android:layout_marginTop="11dp"
+        android:background="@drawable/selector_state" />
 
     <TextView
         android:id="@+id/listContacts"
@@ -30,6 +30,8 @@
         android:layout_width="318dp"
         android:layout_height="398dp"
         android:layout_marginTop="10dp"
+        android:divider="@color/colorTransparent"
+        android:dividerHeight="6dp"
         android:layout_below="@id/listContacts"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true">

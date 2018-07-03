@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
@@ -19,6 +20,7 @@ public class HomeActivity extends AppCompatActivity {
                 Intent mainIntent = new Intent(HomeActivity.this, MainActivity.class);
                 startActivity(mainIntent);
                 finish();
+
 
                 overridePendingTransition(R.anim.fadein, R.anim.fadeout);
             }

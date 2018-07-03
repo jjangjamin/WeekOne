@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity">
 
-    <ImageView
+    <pl.droidsonroids.gif.GifTextView
         android:id="@+id/img_animation"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scaleType="fitXY"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        app:srcCompat="@drawable/splash" />
+        android:background="@drawable/launcing"
+
+        />
 </RelativeLayout>

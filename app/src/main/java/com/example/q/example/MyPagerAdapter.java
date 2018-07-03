@@ -1,5 +1,6 @@
 package com.example.q.example;
 
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -32,6 +33,7 @@ public class MyPagerAdapter extends FragmentStatePagerAdapter {
                 return  tab2;
             case 2:
                 LightFragment tab3 = new LightFragment();
+
                 return  tab3;
             default:
                 return null;
