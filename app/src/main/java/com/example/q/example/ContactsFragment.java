@@ -1,23 +1,30 @@
 package com.example.q.example;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
@@ -97,6 +104,8 @@ public class ContactsFragment extends Fragment{
     ArrayAdapter<String> arrayAdapter;
     Cursor cursor;
     String name, phonenumber;
+    EditText editSearch;
+    SearchAdapter searchadapter;
     public static final int RequestPermissionCode = 1;
 
     @Override
@@ -109,71 +118,129 @@ public class ContactsFragment extends Fragment{
         loadContacts = (Button) v.findViewById(R.id.button);
         StoreContacts = new ArrayList<String>();
         StoreContacts2 = new ArrayList<String>();
-
+     /*   editSearch = (EditText) v.findViewById(R.id.searchcontacts);
+        searchadapter = new SearchAdapter(StoreContacts.this);
+        listviewContact.setAdapter(searchadapter);
+*/
         loadContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GetContactsIntoArrayList();
-                listviewContact.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
-                        R.layout.contact_items_listview, R.id.textView, StoreContacts));
-                loadContacts.setEnabled(false);
+                if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)== PackageManager.PERMISSION_GRANTED){
+                    GetContactsIntoArrayList();
+                    listviewContact.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
+                            R.layout.contact_items_listview, R.id.textView, StoreContacts));
+                    loadContacts.setEnabled(false);
+
+                }
+                else{
+                    if(shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)){
+                        Toast.makeText(getActivity().getApplicationContext(), "Permission Needed.", Toast.LENGTH_LONG).show();
+                    }
+                    requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 123);
+                }
 
             }
         });
+        /*
+        editSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                String text = editSearch.getText().toString();
+                search(text);
+            }
+
+            private void search(String text) {
+                listviewContact.clear();
+            }
+        });
+*/
 
         listviewContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?>parent, View v, final int position, long id) {
-                final String friend = (StoreContacts.get(position).replaceAll("[0-9]", "").replaceAll(" ", "").replaceAll(new String(Character.toChars(0x1F92A)), "")
-                        .replaceAll(new String(Character.toChars(0x1F37B)), "").replaceAll(new String(Character.toChars(0x1F4DE)), ""));
-                        new AlertDialog.Builder(getActivity()).setTitle("전화 콜!").setMessage(friend + " 한테 술 먹자고 연락해봐요?").setIcon(android.R.drawable.ic_dialog_alert)
-                        .setPositiveButton("전화걸기", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
-                                Intent intent = new Intent(Intent.ACTION_CALL);
-                                intent.setData(Uri.parse("tel:" + phone));
-                                try {
-                                    startActivity(intent);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                if (checkandRequestPermissions()) {
+                    final String friend = (StoreContacts.get(position).replaceAll("[0-9]", "").replaceAll(" ", "").replaceAll(new String(Character.toChars(0x1F92A)), "")
+                            .replaceAll(new String(Character.toChars(0x1F37B)), "").replaceAll(new String(Character.toChars(0x1F4DE)), ""));
+                    new AlertDialog.Builder(getActivity()).setTitle("전화 콜!").setMessage(friend + " 한테 술 먹자고 연락해봐요?").setIcon(android.R.drawable.ic_dialog_dialer)
+                            .setPositiveButton("전화걸기", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                    Intent intent = new Intent(Intent.ACTION_CALL);
+                                    intent.setData(Uri.parse("tel:" + phone));
+                                    try {
+                                        startActivity(intent);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        })
-                        .setNegativeButton("문자보내기", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                new AlertDialog.Builder(getActivity()).setTitle("문자보내기").setMessage("직접 보내실래요 아니면 내가 대신 보내드릴까요?").setIcon(android.R.drawable.ic_dialog_email)
-                                .setPositiveButton("직접보내기",new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
-                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms",phone,null));
-                                        try {
-                                            startActivity(intent);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                })
-                                .setNegativeButton("대신 보내줘", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
-                                        String messageToSend = "오늘 술 각? 적셔부려 레츠기릿!";
-                                        SmsManager.getDefault().sendTextMessage(phone, null, messageToSend, null, null);
-                                        Toast.makeText(getActivity(), friend + "한테 문자 보냈쩌여~", Toast.LENGTH_LONG).show();
-                                    }
-                                })
-                                .setNeutralButton("취소", null).show();
+                            })
+                            .setNegativeButton("문자보내기", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    new AlertDialog.Builder(getActivity()).setTitle("문자보내기").setMessage("직접 보내실래요 아니면 내가 대신 보내드릴까요?").setIcon(android.R.drawable.ic_dialog_email)
+                                            .setPositiveButton("직접보내기",new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms",phone,null));
+                                                    try {
+                                                        startActivity(intent);
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                }
+                                            })
+                                            .setNegativeButton("대신 보내줘", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    String phone = (StoreContacts2.get(position).replaceAll("[^0-9]", ""));
+                                                    String messageToSend = "오늘 술 각? 적셔부려 레츠기릿!";
+                                                    SmsManager.getDefault().sendTextMessage(phone, null, messageToSend, null, null);
+                                                    Toast.makeText(getActivity(), friend + "한테 문자 보냈쩌여~", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .setNeutralButton("취소", null).show();
 
-                            }
-                        })
-                        .setNeutralButton("취소", null).show();
+                                }
+                            })
+                            .setNeutralButton("취소", null).show();
+                }
             }
         });
         return v;
 
+    }
+
+    public boolean checkandRequestPermissions(){
+        int permissionSendMessage = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.SEND_SMS);
+        int permissioncallPhone = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE);
+        int permissionReceiveMessage = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECEIVE_SMS);
+        List<String> listPermissionNeeded = new ArrayList<>();
+        if (permissioncallPhone != PackageManager.PERMISSION_GRANTED) {
+            listPermissionNeeded.add(Manifest.permission.CALL_PHONE);
+        }
+        if (permissionSendMessage != PackageManager.PERMISSION_GRANTED){
+            listPermissionNeeded.add(Manifest.permission.SEND_SMS);
+        }
+        if (permissionReceiveMessage != PackageManager.PERMISSION_GRANTED){
+            listPermissionNeeded.add(Manifest.permission.RECEIVE_SMS);
+        }
+        if (!listPermissionNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(getActivity(), listPermissionNeeded.toArray(new String[listPermissionNeeded.size()]), 1);
+            return false;
+        }
+        return true;
     }
 
     public void GetContactsIntoArrayList() {
