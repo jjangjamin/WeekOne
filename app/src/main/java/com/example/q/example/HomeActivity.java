@@ -9,7 +9,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 
 public class HomeActivity extends AppCompatActivity {
-    private static int SPLASH_TIME_OUT = 3000;
+    private static int SPLASH_TIME_OUT = 4100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,7 +17,7 @@ public class HomeActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run(){
-                Intent mainIntent = new Intent(HomeActivity.this, MainActivity.class);
+                Intent mainIntent = new Intent(HomeActivity.this, LoadingActivity.class);
                 startActivity(mainIntent);
                 finish();
 

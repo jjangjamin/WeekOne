@@ -108,6 +108,8 @@ public class ContactsFragment extends Fragment{
     SearchAdapter searchadapter;
     public static final int RequestPermissionCode = 1;
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -118,10 +120,8 @@ public class ContactsFragment extends Fragment{
         loadContacts = (Button) v.findViewById(R.id.button);
         StoreContacts = new ArrayList<String>();
         StoreContacts2 = new ArrayList<String>();
-     /*   editSearch = (EditText) v.findViewById(R.id.searchcontacts);
-        searchadapter = new SearchAdapter(StoreContacts.this);
-        listviewContact.setAdapter(searchadapter);
-*/
+
+
         loadContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -130,7 +130,6 @@ public class ContactsFragment extends Fragment{
                     listviewContact.setAdapter(new ArrayAdapter<String>(getActivity().getApplicationContext(),
                             R.layout.contact_items_listview, R.id.textView, StoreContacts));
                     loadContacts.setEnabled(false);
-
                 }
                 else{
                     if(shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)){
@@ -141,29 +140,7 @@ public class ContactsFragment extends Fragment{
 
             }
         });
-        /*
-        editSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                
-            }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String text = editSearch.getText().toString();
-                search(text);
-            }
-
-            private void search(String text) {
-                listviewContact.clear();
-            }
-        });
-*/
 
         listviewContact.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

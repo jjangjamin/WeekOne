@@ -1,14 +1,17 @@
 package com.example.q.example;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -29,11 +32,15 @@ import com.bumptech.glide.Glide;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static android.content.Intent.ACTION_SEND;
+import static android.content.Intent.EXTRA_STREAM;
 
 
 /**
@@ -91,13 +98,15 @@ public class GalleryFragment extends Fragment {
     ImageView imageView;
 
     private Uri imageUri;
+    private String imageFilePath;
     Button imagebutton;
     Button button;
+    Button button2;
     TextView cameratext;
     private static final int REQUEST_OPEN_RESULT_CODE = 0;
     private static final int RESULT_LOAD_IMAGE= 1;
     private final int CAMERA_RESULT=1;
-    private String imageFilePath="";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,6 +117,7 @@ public class GalleryFragment extends Fragment {
         imagebutton = (Button)v.findViewById(R.id.imagebutton);
         button = (Button)v.findViewById(R.id.buttoncamera);
         cameratext = (TextView)v.findViewById(R.id.cameratext);
+        button2 = (Button)v.findViewById(R.id.button2);
         Animation anim = new AlphaAnimation(0.0f, 1.0f);
         anim.setDuration(60);
         anim.setRepeatMode(Animation.REVERSE);
@@ -118,7 +128,7 @@ public class GalleryFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                       cameratext.clearAnimation();
+                        cameratext.clearAnimation();
                     }
                 }
         );
@@ -148,6 +158,18 @@ public class GalleryFragment extends Fragment {
             }
         });
 
+        button2.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.setType("image/*");
+                shareIntent.putExtra(EXTRA_STREAM,imageUri);
+                startActivity(Intent.createChooser(shareIntent,"Share Using"));
+            }
+        });
+
+
         imageView.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View v){
@@ -161,10 +183,33 @@ public class GalleryFragment extends Fragment {
 
     private void dispatchTakenPictureIntent(){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(intent.resolveActivity(getActivity().getPackageManager()) != null){
-            startActivityForResult(intent, CAMERA_RESULT);
-
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            if (photoFile != null) {
+                imageUri = FileProvider.getUriForFile(getActivity(), getActivity().getPackageName(), photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, CAMERA_RESULT);
+            }
         }
+    }
+
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "TEST_" + timeStamp + "_";
+        File storageDir = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,      /* prefix */
+                ".jpg",         /* suffix */
+                storageDir          /* directory */
+        );
+        imageFilePath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -183,30 +228,73 @@ public class GalleryFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData){
         super.onActivityResult(requestCode,resultCode,resultData);
-
         if(requestCode ==  REQUEST_OPEN_RESULT_CODE&&resultCode == Activity.RESULT_OK){
             Uri uri = null;
             if(resultData!=null){
                 uri = resultData.getData();
                 imageUri = resultData.getData();
-                /*try {
+                try {
                     Bitmap bitmap = getBitmapFromUri(uri);
                     imageView.setImageBitmap(bitmap);
                 } catch(IOException e){
                     e.printStackTrace();
-                }*/
-                Glide.with(this)
+                }
+                /*Glide.with(this)
                         .load(uri)
-                        .into(imageView);
+                        .into(imageView);*/
             }
         }
         if (resultCode == Activity.RESULT_OK&&requestCode==CAMERA_RESULT){
-            Bundle extras = resultData.getExtras();
+            Bitmap bitmap = BitmapFactory.decodeFile(imageFilePath);
+            ExifInterface exif = null;
+            try {
+                exif = new ExifInterface(imageFilePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int exifOrientation;
+            int exifDegree;
+
+            if (exif != null) {
+                exifOrientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                exifDegree = exifOrientationToDegrees(exifOrientation);
+            } else {
+                exifDegree = 0;
+            }
+
+            /*Bundle extras = resultData.getExtras();
             Bitmap bitmap = (Bitmap) extras.get("data");
-            imageView.setImageBitmap(bitmap);
+            imageView.setImageBitmap(bitmap);*/
+            imageView.setImageBitmap(rotate(bitmap,exifDegree));
         }
 
 
+    }
+
+    private Bitmap getBitmapFromUri(Uri uri) throws IOException{
+        ParcelFileDescriptor parcelFileDescriptor = getActivity().getContentResolver().openFileDescriptor(uri,"r");
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        Bitmap bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        parcelFileDescriptor.close();
+        return bitmap;
+    }
+
+    private int exifOrientationToDegrees(int exifOrientation) {
+        if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90) {
+            return 90;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_180) {
+            return 180;
+        } else if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_270) {
+            return 270;
+        }
+        return 0;
+    }
+
+    private Bitmap rotate(Bitmap bitmap, float degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
 
