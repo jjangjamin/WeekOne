@@ -76,6 +76,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:background="@drawable/glitter" />
+
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/glitter"
         android:layout_width="match_parent"

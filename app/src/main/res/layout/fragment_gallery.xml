@@ -59,5 +59,12 @@
         android:text="얼른 카메라 눌러서 흑역사 캡처해! "
         android:textColor="@color/colorSoju" />
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/yay"
+        android:layout_width="100dp"
+        android:layout_height="113dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@drawable/yay" />
 
 </RelativeLayout>

@@ -17,6 +17,7 @@
         android:icon="@drawable/launcher"
         android:label="마시고 말해"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:largeHeap="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
