@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import pl.droidsonroids.gif.GifImageView;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -120,7 +122,28 @@ public class ContactsFragment extends Fragment{
         loadContacts = (Button) v.findViewById(R.id.button);
         StoreContacts = new ArrayList<String>();
         StoreContacts2 = new ArrayList<String>();
-
+        final GifImageView shakeit = (GifImageView)v. findViewById(R.id.shakeit);
+        final GifImageView dancebreak = (GifImageView)v. findViewById(R.id.dancebreak);
+        final GifImageView glitter = (GifImageView)v.findViewById(R.id.glitter);
+        final GifImageView glitter2 = (GifImageView)v.findViewById(R.id.glitter2);
+            shakeit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    shakeit.setVisibility(View.GONE);
+                    dancebreak.setVisibility(View.VISIBLE);
+                    glitter.setVisibility(View.VISIBLE);
+                    glitter2.setVisibility(View.VISIBLE);
+                }
+            });
+        dancebreak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dancebreak.setVisibility(View.GONE);
+                glitter.setVisibility(View.GONE);
+                glitter2.setVisibility(View.GONE);
+                shakeit.setVisibility(View.VISIBLE);
+            }
+        });
 
         loadContacts.setOnClickListener(new View.OnClickListener() {
             @Override

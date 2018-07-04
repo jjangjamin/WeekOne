@@ -42,10 +42,48 @@
     <pl.droidsonroids.gif.GifImageView
         android:layout_width="203dp"
         android:layout_height="142dp"
+        android:id="@+id/shakeit"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_marginBottom="15dp"
         android:background="@drawable/shakeit" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dancebreak"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/dancebreak" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/together"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/together" />
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/glitter2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/glitter" />
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/glitter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/glitter" />
 
 
 </RelativeLayout>

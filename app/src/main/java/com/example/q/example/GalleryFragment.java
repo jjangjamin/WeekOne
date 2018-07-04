@@ -39,6 +39,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import pl.droidsonroids.gif.GifImageView;
+
 import static android.content.Intent.ACTION_SEND;
 import static android.content.Intent.EXTRA_STREAM;
 
@@ -123,6 +125,7 @@ public class GalleryFragment extends Fragment {
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
         cameratext.startAnimation(anim);
+
 
         cameratext.setOnClickListener(
                 new View.OnClickListener() {
